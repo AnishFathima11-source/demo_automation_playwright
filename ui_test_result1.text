@@ -1,0 +1,1787 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.9, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/anishfathima/demo_automation
+plugins: anyio-4.6.0, metadata-3.1.1, html-4.1.1, bdd-8.1.0, ordering-0.6, dependency-0.6.0
+collected 6 items
+
+uitest/test_cart.py F                                                    [ 16%]
+uitest/test_homepage.py F                                                [ 33%]
+uitest/test_login.py F                                                   [ 50%]
+uitest/test_logout.py F                                                  [ 66%]
+uitest/test_order.py F                                                   [ 83%]
+uitest/test_signup.py F                                                  [100%]
+
+=================================== FAILURES ===================================
+__________________________ test_add_a_laptop_to_cart ___________________________
+
+.0 = <list_iterator object at 0x7dafbe71abc0>
+
+    kwargs |= {
+>       arg: request.getfixturevalue(arg) for arg in get_required_args(context.step_func) if arg not in kwargs
+    }
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pytest_bdd/scenario.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureRequest for <Function test_add_a_laptop_to_cart>>
+argname = 'signed_up_user'
+
+    def getfixturevalue(self, argname: str) -> Any:
+        """Dynamically run a named fixture function.
+    
+        Declaring fixtures via function argument is recommended where possible.
+        But if you can only decide whether to use another fixture at test
+        setup time, you may use this function to retrieve it inside a fixture
+        or test function body.
+    
+        This method can be used during the test setup phase or the test run
+        phase, but during the test teardown phase a fixture's value may not
+        be available.
+    
+        :param argname:
+            The fixture name.
+        :raises pytest.FixtureLookupError:
+            If the given fixture could not be found.
+        """
+        # Note that in addition to the use case described in the docstring,
+        # getfixturevalue() is also called by pytest itself during item and fixture
+        # setup to evaluate the fixtures that are requested statically
+        # (using function parameters, autouse, etc).
+    
+>       fixturedef = self._get_active_fixturedef(argname)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:532: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureRequest for <Function test_add_a_laptop_to_cart>>
+argname = 'signed_up_user'
+
+    def _get_active_fixturedef(
+        self, argname: str
+    ) -> FixtureDef[object] | PseudoFixtureDef[object]:
+        if argname == "request":
+            cached_result = (self, [0], None)
+            return PseudoFixtureDef(cached_result, Scope.Function)
+    
+        # If we already finished computing a fixture by this name in this item,
+        # return it.
+        fixturedef = self._fixture_defs.get(argname)
+        if fixturedef is not None:
+            self._check_scope(fixturedef, fixturedef._scope)
+            return fixturedef
+    
+        # Find the appropriate fixturedef.
+        fixturedefs = self._arg2fixturedefs.get(argname, None)
+        if fixturedefs is None:
+            # We arrive here because of a dynamic call to
+            # getfixturevalue(argname) which was naturally
+            # not known at parsing/collection time.
+            fixturedefs = self._fixturemanager.getfixturedefs(argname, self._pyfuncitem)
+            if fixturedefs is not None:
+                self._arg2fixturedefs[argname] = fixturedefs
+        # No fixtures defined with this name.
+        if fixturedefs is None:
+            raise FixtureLookupError(argname, self)
+        # The are no fixtures with this name applicable for the function.
+        if not fixturedefs:
+            raise FixtureLookupError(argname, self)
+        # A fixture may override another fixture with the same name, e.g. a
+        # fixture in a module can override a fixture in a conftest, a fixture in
+        # a class can override a fixture in the module, and so on.
+        # An overriding fixture can request its own name (possibly indirectly);
+        # in this case it gets the value of the fixture it overrides, one level
+        # up.
+        # Check how many `argname`s deep we are, and take the next one.
+        # `fixturedefs` is sorted from furthest to closest, so use negative
+        # indexing to go in reverse.
+        index = -1
+        for request in self._iter_chain():
+            if request.fixturename == argname:
+                index -= 1
+        # If already consumed all of the available levels, fail.
+        if -index > len(fixturedefs):
+            raise FixtureLookupError(argname, self)
+        fixturedef = fixturedefs[index]
+    
+        # Prepare a SubRequest object for calling the fixture.
+        try:
+            callspec = self._pyfuncitem.callspec
+        except AttributeError:
+            callspec = None
+        if callspec is not None and argname in callspec.params:
+            param = callspec.params[argname]
+            param_index = callspec.indices[argname]
+            # The parametrize invocation scope overrides the fixture's scope.
+            scope = callspec._arg2scope[argname]
+        else:
+            param = NOTSET
+            param_index = 0
+            scope = fixturedef._scope
+            self._check_fixturedef_without_param(fixturedef)
+        self._check_scope(fixturedef, scope)
+        subrequest = SubRequest(
+            self, scope, param, param_index, fixturedef, _ispytest=True
+        )
+    
+        # Make sure the fixture value is cached, running it if it isn't
+>       fixturedef.execute(request=subrequest)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:617: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureDef argname='signed_up_user' scope='session' baseid='uitest'>
+request = <SubRequest 'signed_up_user' for <Function test_add_a_laptop_to_cart>>
+
+    def execute(self, request: SubRequest) -> FixtureValue:
+        """Return the value of this fixture, executing it if not cached."""
+        # Ensure that the dependent fixtures requested by this fixture are loaded.
+        # This needs to be done before checking if we have a cached value, since
+        # if a dependent fixture has their cache invalidated, e.g. due to
+        # parametrization, they finalize themselves and fixtures depending on it
+        # (which will likely include this fixture) setting `self.cached_result = None`.
+        # See #4871
+        requested_fixtures_that_should_finalize_us = []
+        for argname in self.argnames:
+            fixturedef = request._get_active_fixturedef(argname)
+            # Saves requested fixtures in a list so we later can add our finalizer
+            # to them, ensuring that if a requested fixture gets torn down we get torn
+            # down first. This is generally handled by SetupState, but still currently
+            # needed when this fixture is not parametrized but depends on a parametrized
+            # fixture.
+            if not isinstance(fixturedef, PseudoFixtureDef):
+                requested_fixtures_that_should_finalize_us.append(fixturedef)
+    
+        # Check for (and return) cached value/exception.
+        if self.cached_result is not None:
+            request_cache_key = self.cache_key(request)
+            cache_key = self.cached_result[1]
+            try:
+                # Attempt to make a normal == check: this might fail for objects
+                # which do not implement the standard comparison (like numpy arrays -- #6497).
+                cache_hit = bool(request_cache_key == cache_key)
+            except (ValueError, RuntimeError):
+                # If the comparison raises, use 'is' as fallback.
+                cache_hit = request_cache_key is cache_key
+    
+            if cache_hit:
+                if self.cached_result[2] is not None:
+                    exc, exc_tb = self.cached_result[2]
+                    raise exc.with_traceback(exc_tb)
+                else:
+                    result = self.cached_result[0]
+                    return result
+            # We have a previous but differently parametrized fixture instance
+            # so we need to tear it down before creating a new one.
+            self.finish(request)
+            assert self.cached_result is None
+    
+        # Add finalizer to requested fixtures we saved previously.
+        # We make sure to do this after checking for cached value to avoid
+        # adding our finalizer multiple times. (#12135)
+        finalizer = functools.partial(self.finish, request=request)
+        for parent_fixture in requested_fixtures_that_should_finalize_us:
+            parent_fixture.addfinalizer(finalizer)
+    
+        ihook = request.node.ihook
+        try:
+            # Setup the fixture, run the code in it, and cache the value
+            # in self.cached_result
+>           result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:1091: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <HookCaller 'pytest_fixture_setup'>
+kwargs = {'fixturedef': <FixtureDef argname='signed_up_user' scope='session' baseid='uitest'>, 'request': <SubRequest 'signed_up_user' for <Function test_add_a_laptop_to_cart>>}
+firstresult = True
+
+    def __call__(self, **kwargs: object) -> Any:
+        """Call the hook.
+    
+        Only accepts keyword arguments, which should match the hook
+        specification.
+    
+        Returns the result(s) of calling all registered plugins, see
+        :ref:`calling`.
+        """
+        assert (
+            not self.is_historic()
+        ), "Cannot directly call a historic hook - use call_historic instead."
+        self._verify_all_args_are_provided(kwargs)
+        firstresult = self.spec.opts.get("firstresult", False) if self.spec else False
+        # Copy because plugins may register other plugins during iteration (#438).
+>       return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pluggy/_hooks.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_pytest.config.PytestPluginManager object at 0x7dafc04e16d0>
+hook_name = 'pytest_fixture_setup'
+methods = [<HookImpl plugin_name='fixtures', plugin=<module '_pytest.fixtures' from '/home/anishfathima/.pyenv/versions/3.11.9/l...pytest.setuponly' from '/home/anishfathima/.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/setuponly.py'>>]
+kwargs = {'fixturedef': <FixtureDef argname='signed_up_user' scope='session' baseid='uitest'>, 'request': <SubRequest 'signed_up_user' for <Function test_add_a_laptop_to_cart>>}
+firstresult = True
+
+    def _hookexec(
+        self,
+        hook_name: str,
+        methods: Sequence[HookImpl],
+        kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -> object | list[object]:
+        # called from all hookcaller instances.
+        # enable_tracing will set its own wrapping function at self._inner_hookexec
+>       return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pluggy/_manager.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturedef = <FixtureDef argname='signed_up_user' scope='session' baseid='uitest'>
+request = <SubRequest 'signed_up_user' for <Function test_add_a_laptop_to_cart>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef[object], request: SubRequest
+    ) -> Generator[None, object, object]:
+        try:
+>           return (yield)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/setuponly.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturedef = <FixtureDef argname='signed_up_user' scope='session' baseid='uitest'>
+request = <SubRequest 'signed_up_user' for <Function test_add_a_laptop_to_cart>>
+
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef[FixtureValue], request: SubRequest
+    ) -> FixtureValue:
+        """Execution of fixture setup."""
+        kwargs = {}
+        for argname in fixturedef.argnames:
+            kwargs[argname] = request.getfixturevalue(argname)
+    
+        fixturefunc = resolve_fixture_function(fixturedef, request)
+        my_cache_key = fixturedef.cache_key(request)
+        try:
+>           result = call_fixture_func(fixturefunc, request, kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:1140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturefunc = <function signed_up_user at 0x7dafbeafaac0>
+request = <SubRequest 'signed_up_user' for <Function test_add_a_laptop_to_cart>>
+kwargs = {'page': <Page url='about:blank'>}
+
+    def call_fixture_func(
+        fixturefunc: _FixtureFunc[FixtureValue], request: FixtureRequest, kwargs
+    ) -> FixtureValue:
+        if is_generator(fixturefunc):
+            fixturefunc = cast(
+                Callable[..., Generator[FixtureValue, None, None]], fixturefunc
+            )
+            generator = fixturefunc(**kwargs)
+            try:
+>               fixture_result = next(generator)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:891: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+page = <Page url='about:blank'>
+
+    @pytest.fixture(scope="session")
+    def signed_up_user(page):
+>       page.goto("https://www.demoblaze.com")
+
+uitest/conftest.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+
+    def goto(
+        self,
+        url: str,
+        *,
+        timeout: typing.Optional[float] = None,
+        wait_until: typing.Optional[
+            Literal["commit", "domcontentloaded", "load", "networkidle"]
+        ] = None,
+        referer: typing.Optional[str] = None,
+    ) -> typing.Optional["Response"]:
+        """Page.goto
+    
+        Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first
+        non-redirect response.
+    
+        The method will throw an error if:
+        - there's an SSL error (e.g. in case of self-signed certificates).
+        - target URL is invalid.
+        - the `timeout` is exceeded during navigation.
+        - the remote server does not respond or is unreachable.
+        - the main resource failed to load.
+    
+        The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404
+        \"Not Found\" and 500 \"Internal Server Error\".  The status code for such responses can be retrieved by calling
+        `response.status()`.
+    
+        **NOTE** The method either throws an error or returns a main resource response. The only exceptions are navigation
+        to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+    
+        **NOTE** Headless mode doesn't support navigation to a PDF document. See the
+        [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+    
+        Parameters
+        ----------
+        url : str
+            URL to navigate page to. The url should include scheme, e.g. `https://`. When a `baseURL` via the context options
+            was provided and the passed URL is a path, it gets merged via the
+            [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+        timeout : Union[float, None]
+            Maximum operation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can
+            be changed by using the `browser_context.set_default_navigation_timeout()`,
+            `browser_context.set_default_timeout()`, `page.set_default_navigation_timeout()` or
+            `page.set_default_timeout()` methods.
+        wait_until : Union["commit", "domcontentloaded", "load", "networkidle", None]
+            When to consider operation succeeded, defaults to `load`. Events can be either:
+            - `'domcontentloaded'` - consider operation to be finished when the `DOMContentLoaded` event is fired.
+            - `'load'` - consider operation to be finished when the `load` event is fired.
+            - `'networkidle'` - **DISCOURAGED** consider operation to be finished when there are no network connections for
+              at least `500` ms. Don't use this method for testing, rely on web assertions to assess readiness instead.
+            - `'commit'` - consider operation to be finished when network response is received and the document started
+              loading.
+        referer : Union[str, None]
+            Referer header value. If provided it will take preference over the referer header value set by
+            `page.set_extra_http_headers()`.
+    
+        Returns
+        -------
+        Union[Response, None]
+        """
+    
+        return mapping.from_impl_nullable(
+>           self._sync(
+                self._impl_obj.goto(
+                    url=url, timeout=timeout, waitUntil=wait_until, referer=referer
+                )
+            )
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/sync_api/_generated.py:9018: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+>       return await self._main_frame.goto(**locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_page.py:551: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Frame name= url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+        return cast(
+            Optional[Response],
+            from_nullable_channel(
+>               await self._channel.send("goto", locals_to_params(locals()))
+            ),
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_frame.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Channel object at 0x7dafbdb974d0>
+method = 'goto', params = {'url': 'https://www.demoblaze.com'}
+
+    async def send(self, method: str, params: Dict = None) -> Any:
+>       return await self._connection.wrap_api_call(
+            lambda: self._inner_send(method, params, False),
+            self._is_internal_type,
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7dafbe721b90>
+cb = <function Channel.send.<locals>.<lambda> at 0x7dafbdc63ec0>
+is_internal = False
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        st: List[inspect.FrameInfo] = getattr(task, "__pw_stack__", inspect.stack())
+        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal)
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.TimeoutError: Page.goto: Timeout 30000ms exceeded.
+E           Call log:
+E             - navigating to "https://www.demoblaze.com/", waiting until "load"
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:528: TimeoutError
+___________________ test_verify_homepage_loads_successfully ____________________
+
+fixturefunc = <function visit_home at 0x7dafbe70dc60>
+request = <FixtureRequest for <Function test_verify_homepage_loads_successfully>>
+kwargs = {'page': <Page url='about:blank'>}
+
+    def call_fixture_func(
+        fixturefunc: _FixtureFunc[FixtureValue], request: FixtureRequest, kwargs
+    ) -> FixtureValue:
+        if is_generator(fixturefunc):
+            fixturefunc = cast(
+                Callable[..., Generator[FixtureValue, None, None]], fixturefunc
+            )
+            generator = fixturefunc(**kwargs)
+            try:
+                fixture_result = next(generator)
+            except StopIteration:
+                raise ValueError(f"{request.fixturename} did not yield a value") from None
+            finalizer = functools.partial(_teardown_yield_fixture, fixturefunc, generator)
+            request.addfinalizer(finalizer)
+        else:
+            fixturefunc = cast(Callable[..., FixtureValue], fixturefunc)
+>           fixture_result = fixturefunc(**kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:898: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+page = <Page url='about:blank'>
+
+    @given("the user navigates to the Demoblaze homepage")
+    def visit_home(page: Page):
+>       page.goto("https://www.demoblaze.com")
+
+uitest/test_homepage.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+
+    def goto(
+        self,
+        url: str,
+        *,
+        timeout: typing.Optional[float] = None,
+        wait_until: typing.Optional[
+            Literal["commit", "domcontentloaded", "load", "networkidle"]
+        ] = None,
+        referer: typing.Optional[str] = None,
+    ) -> typing.Optional["Response"]:
+        """Page.goto
+    
+        Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first
+        non-redirect response.
+    
+        The method will throw an error if:
+        - there's an SSL error (e.g. in case of self-signed certificates).
+        - target URL is invalid.
+        - the `timeout` is exceeded during navigation.
+        - the remote server does not respond or is unreachable.
+        - the main resource failed to load.
+    
+        The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404
+        \"Not Found\" and 500 \"Internal Server Error\".  The status code for such responses can be retrieved by calling
+        `response.status()`.
+    
+        **NOTE** The method either throws an error or returns a main resource response. The only exceptions are navigation
+        to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+    
+        **NOTE** Headless mode doesn't support navigation to a PDF document. See the
+        [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+    
+        Parameters
+        ----------
+        url : str
+            URL to navigate page to. The url should include scheme, e.g. `https://`. When a `baseURL` via the context options
+            was provided and the passed URL is a path, it gets merged via the
+            [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+        timeout : Union[float, None]
+            Maximum operation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can
+            be changed by using the `browser_context.set_default_navigation_timeout()`,
+            `browser_context.set_default_timeout()`, `page.set_default_navigation_timeout()` or
+            `page.set_default_timeout()` methods.
+        wait_until : Union["commit", "domcontentloaded", "load", "networkidle", None]
+            When to consider operation succeeded, defaults to `load`. Events can be either:
+            - `'domcontentloaded'` - consider operation to be finished when the `DOMContentLoaded` event is fired.
+            - `'load'` - consider operation to be finished when the `load` event is fired.
+            - `'networkidle'` - **DISCOURAGED** consider operation to be finished when there are no network connections for
+              at least `500` ms. Don't use this method for testing, rely on web assertions to assess readiness instead.
+            - `'commit'` - consider operation to be finished when network response is received and the document started
+              loading.
+        referer : Union[str, None]
+            Referer header value. If provided it will take preference over the referer header value set by
+            `page.set_extra_http_headers()`.
+    
+        Returns
+        -------
+        Union[Response, None]
+        """
+    
+        return mapping.from_impl_nullable(
+>           self._sync(
+                self._impl_obj.goto(
+                    url=url, timeout=timeout, waitUntil=wait_until, referer=referer
+                )
+            )
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/sync_api/_generated.py:9018: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+>       return await self._main_frame.goto(**locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_page.py:551: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Frame name= url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+        return cast(
+            Optional[Response],
+            from_nullable_channel(
+>               await self._channel.send("goto", locals_to_params(locals()))
+            ),
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_frame.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Channel object at 0x7dafbdb974d0>
+method = 'goto', params = {'url': 'https://www.demoblaze.com'}
+
+    async def send(self, method: str, params: Dict = None) -> Any:
+>       return await self._connection.wrap_api_call(
+            lambda: self._inner_send(method, params, False),
+            self._is_internal_type,
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7dafbe721b90>
+cb = <function Channel.send.<locals>.<lambda> at 0x7dafbe74ce00>
+is_internal = False
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        st: List[inspect.FrameInfo] = getattr(task, "__pw_stack__", inspect.stack())
+        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal)
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.Error: Page.goto: net::ERR_ABORTED; maybe frame was detached?
+E           Call log:
+E             - navigating to "https://www.demoblaze.com/", waiting until "load"
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:528: Error
+______________________ test_login_with_valid_credentials _______________________
+
+fixturefunc = <function open_login at 0x7dafbe70da80>
+request = <FixtureRequest for <Function test_login_with_valid_credentials>>
+kwargs = {'page': <Page url='about:blank'>}
+
+    def call_fixture_func(
+        fixturefunc: _FixtureFunc[FixtureValue], request: FixtureRequest, kwargs
+    ) -> FixtureValue:
+        if is_generator(fixturefunc):
+            fixturefunc = cast(
+                Callable[..., Generator[FixtureValue, None, None]], fixturefunc
+            )
+            generator = fixturefunc(**kwargs)
+            try:
+                fixture_result = next(generator)
+            except StopIteration:
+                raise ValueError(f"{request.fixturename} did not yield a value") from None
+            finalizer = functools.partial(_teardown_yield_fixture, fixturefunc, generator)
+            request.addfinalizer(finalizer)
+        else:
+            fixturefunc = cast(Callable[..., FixtureValue], fixturefunc)
+>           fixture_result = fixturefunc(**kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:898: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+page = <Page url='about:blank'>
+
+    @given("the user opens the login modal")
+    def open_login(page: Page):
+>       page.goto("https://www.demoblaze.com")
+
+uitest/test_login.py:9: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+
+    def goto(
+        self,
+        url: str,
+        *,
+        timeout: typing.Optional[float] = None,
+        wait_until: typing.Optional[
+            Literal["commit", "domcontentloaded", "load", "networkidle"]
+        ] = None,
+        referer: typing.Optional[str] = None,
+    ) -> typing.Optional["Response"]:
+        """Page.goto
+    
+        Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first
+        non-redirect response.
+    
+        The method will throw an error if:
+        - there's an SSL error (e.g. in case of self-signed certificates).
+        - target URL is invalid.
+        - the `timeout` is exceeded during navigation.
+        - the remote server does not respond or is unreachable.
+        - the main resource failed to load.
+    
+        The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404
+        \"Not Found\" and 500 \"Internal Server Error\".  The status code for such responses can be retrieved by calling
+        `response.status()`.
+    
+        **NOTE** The method either throws an error or returns a main resource response. The only exceptions are navigation
+        to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+    
+        **NOTE** Headless mode doesn't support navigation to a PDF document. See the
+        [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+    
+        Parameters
+        ----------
+        url : str
+            URL to navigate page to. The url should include scheme, e.g. `https://`. When a `baseURL` via the context options
+            was provided and the passed URL is a path, it gets merged via the
+            [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+        timeout : Union[float, None]
+            Maximum operation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can
+            be changed by using the `browser_context.set_default_navigation_timeout()`,
+            `browser_context.set_default_timeout()`, `page.set_default_navigation_timeout()` or
+            `page.set_default_timeout()` methods.
+        wait_until : Union["commit", "domcontentloaded", "load", "networkidle", None]
+            When to consider operation succeeded, defaults to `load`. Events can be either:
+            - `'domcontentloaded'` - consider operation to be finished when the `DOMContentLoaded` event is fired.
+            - `'load'` - consider operation to be finished when the `load` event is fired.
+            - `'networkidle'` - **DISCOURAGED** consider operation to be finished when there are no network connections for
+              at least `500` ms. Don't use this method for testing, rely on web assertions to assess readiness instead.
+            - `'commit'` - consider operation to be finished when network response is received and the document started
+              loading.
+        referer : Union[str, None]
+            Referer header value. If provided it will take preference over the referer header value set by
+            `page.set_extra_http_headers()`.
+    
+        Returns
+        -------
+        Union[Response, None]
+        """
+    
+        return mapping.from_impl_nullable(
+>           self._sync(
+                self._impl_obj.goto(
+                    url=url, timeout=timeout, waitUntil=wait_until, referer=referer
+                )
+            )
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/sync_api/_generated.py:9018: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+>       return await self._main_frame.goto(**locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_page.py:551: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Frame name= url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+        return cast(
+            Optional[Response],
+            from_nullable_channel(
+>               await self._channel.send("goto", locals_to_params(locals()))
+            ),
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_frame.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Channel object at 0x7dafbdb974d0>
+method = 'goto', params = {'url': 'https://www.demoblaze.com'}
+
+    async def send(self, method: str, params: Dict = None) -> Any:
+>       return await self._connection.wrap_api_call(
+            lambda: self._inner_send(method, params, False),
+            self._is_internal_type,
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7dafbe721b90>
+cb = <function Channel.send.<locals>.<lambda> at 0x7dafbec44180>
+is_internal = False
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        st: List[inspect.FrameInfo] = getattr(task, "__pw_stack__", inspect.stack())
+        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal)
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:528: TargetClosedError
+___________________________ test_logout_from_account ___________________________
+
+.0 = <list_iterator object at 0x7dafbd527bb0>
+
+    kwargs |= {
+>       arg: request.getfixturevalue(arg) for arg in get_required_args(context.step_func) if arg not in kwargs
+    }
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pytest_bdd/scenario.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureRequest for <Function test_logout_from_account>>
+argname = 'logged_in_user'
+
+    def getfixturevalue(self, argname: str) -> Any:
+        """Dynamically run a named fixture function.
+    
+        Declaring fixtures via function argument is recommended where possible.
+        But if you can only decide whether to use another fixture at test
+        setup time, you may use this function to retrieve it inside a fixture
+        or test function body.
+    
+        This method can be used during the test setup phase or the test run
+        phase, but during the test teardown phase a fixture's value may not
+        be available.
+    
+        :param argname:
+            The fixture name.
+        :raises pytest.FixtureLookupError:
+            If the given fixture could not be found.
+        """
+        # Note that in addition to the use case described in the docstring,
+        # getfixturevalue() is also called by pytest itself during item and fixture
+        # setup to evaluate the fixtures that are requested statically
+        # (using function parameters, autouse, etc).
+    
+>       fixturedef = self._get_active_fixturedef(argname)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:532: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureRequest for <Function test_logout_from_account>>
+argname = 'logged_in_user'
+
+    def _get_active_fixturedef(
+        self, argname: str
+    ) -> FixtureDef[object] | PseudoFixtureDef[object]:
+        if argname == "request":
+            cached_result = (self, [0], None)
+            return PseudoFixtureDef(cached_result, Scope.Function)
+    
+        # If we already finished computing a fixture by this name in this item,
+        # return it.
+        fixturedef = self._fixture_defs.get(argname)
+        if fixturedef is not None:
+            self._check_scope(fixturedef, fixturedef._scope)
+            return fixturedef
+    
+        # Find the appropriate fixturedef.
+        fixturedefs = self._arg2fixturedefs.get(argname, None)
+        if fixturedefs is None:
+            # We arrive here because of a dynamic call to
+            # getfixturevalue(argname) which was naturally
+            # not known at parsing/collection time.
+            fixturedefs = self._fixturemanager.getfixturedefs(argname, self._pyfuncitem)
+            if fixturedefs is not None:
+                self._arg2fixturedefs[argname] = fixturedefs
+        # No fixtures defined with this name.
+        if fixturedefs is None:
+            raise FixtureLookupError(argname, self)
+        # The are no fixtures with this name applicable for the function.
+        if not fixturedefs:
+            raise FixtureLookupError(argname, self)
+        # A fixture may override another fixture with the same name, e.g. a
+        # fixture in a module can override a fixture in a conftest, a fixture in
+        # a class can override a fixture in the module, and so on.
+        # An overriding fixture can request its own name (possibly indirectly);
+        # in this case it gets the value of the fixture it overrides, one level
+        # up.
+        # Check how many `argname`s deep we are, and take the next one.
+        # `fixturedefs` is sorted from furthest to closest, so use negative
+        # indexing to go in reverse.
+        index = -1
+        for request in self._iter_chain():
+            if request.fixturename == argname:
+                index -= 1
+        # If already consumed all of the available levels, fail.
+        if -index > len(fixturedefs):
+            raise FixtureLookupError(argname, self)
+        fixturedef = fixturedefs[index]
+    
+        # Prepare a SubRequest object for calling the fixture.
+        try:
+            callspec = self._pyfuncitem.callspec
+        except AttributeError:
+            callspec = None
+        if callspec is not None and argname in callspec.params:
+            param = callspec.params[argname]
+            param_index = callspec.indices[argname]
+            # The parametrize invocation scope overrides the fixture's scope.
+            scope = callspec._arg2scope[argname]
+        else:
+            param = NOTSET
+            param_index = 0
+            scope = fixturedef._scope
+            self._check_fixturedef_without_param(fixturedef)
+        self._check_scope(fixturedef, scope)
+        subrequest = SubRequest(
+            self, scope, param, param_index, fixturedef, _ispytest=True
+        )
+    
+        # Make sure the fixture value is cached, running it if it isn't
+>       fixturedef.execute(request=subrequest)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:617: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>
+request = <SubRequest 'logged_in_user' for <Function test_logout_from_account>>
+
+    def execute(self, request: SubRequest) -> FixtureValue:
+        """Return the value of this fixture, executing it if not cached."""
+        # Ensure that the dependent fixtures requested by this fixture are loaded.
+        # This needs to be done before checking if we have a cached value, since
+        # if a dependent fixture has their cache invalidated, e.g. due to
+        # parametrization, they finalize themselves and fixtures depending on it
+        # (which will likely include this fixture) setting `self.cached_result = None`.
+        # See #4871
+        requested_fixtures_that_should_finalize_us = []
+        for argname in self.argnames:
+            fixturedef = request._get_active_fixturedef(argname)
+            # Saves requested fixtures in a list so we later can add our finalizer
+            # to them, ensuring that if a requested fixture gets torn down we get torn
+            # down first. This is generally handled by SetupState, but still currently
+            # needed when this fixture is not parametrized but depends on a parametrized
+            # fixture.
+            if not isinstance(fixturedef, PseudoFixtureDef):
+                requested_fixtures_that_should_finalize_us.append(fixturedef)
+    
+        # Check for (and return) cached value/exception.
+        if self.cached_result is not None:
+            request_cache_key = self.cache_key(request)
+            cache_key = self.cached_result[1]
+            try:
+                # Attempt to make a normal == check: this might fail for objects
+                # which do not implement the standard comparison (like numpy arrays -- #6497).
+                cache_hit = bool(request_cache_key == cache_key)
+            except (ValueError, RuntimeError):
+                # If the comparison raises, use 'is' as fallback.
+                cache_hit = request_cache_key is cache_key
+    
+            if cache_hit:
+                if self.cached_result[2] is not None:
+                    exc, exc_tb = self.cached_result[2]
+                    raise exc.with_traceback(exc_tb)
+                else:
+                    result = self.cached_result[0]
+                    return result
+            # We have a previous but differently parametrized fixture instance
+            # so we need to tear it down before creating a new one.
+            self.finish(request)
+            assert self.cached_result is None
+    
+        # Add finalizer to requested fixtures we saved previously.
+        # We make sure to do this after checking for cached value to avoid
+        # adding our finalizer multiple times. (#12135)
+        finalizer = functools.partial(self.finish, request=request)
+        for parent_fixture in requested_fixtures_that_should_finalize_us:
+            parent_fixture.addfinalizer(finalizer)
+    
+        ihook = request.node.ihook
+        try:
+            # Setup the fixture, run the code in it, and cache the value
+            # in self.cached_result
+>           result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:1091: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <HookCaller 'pytest_fixture_setup'>
+kwargs = {'fixturedef': <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>, 'request': <SubRequest 'logged_in_user' for <Function test_logout_from_account>>}
+firstresult = True
+
+    def __call__(self, **kwargs: object) -> Any:
+        """Call the hook.
+    
+        Only accepts keyword arguments, which should match the hook
+        specification.
+    
+        Returns the result(s) of calling all registered plugins, see
+        :ref:`calling`.
+        """
+        assert (
+            not self.is_historic()
+        ), "Cannot directly call a historic hook - use call_historic instead."
+        self._verify_all_args_are_provided(kwargs)
+        firstresult = self.spec.opts.get("firstresult", False) if self.spec else False
+        # Copy because plugins may register other plugins during iteration (#438).
+>       return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pluggy/_hooks.py:513: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <_pytest.config.PytestPluginManager object at 0x7dafc04e16d0>
+hook_name = 'pytest_fixture_setup'
+methods = [<HookImpl plugin_name='fixtures', plugin=<module '_pytest.fixtures' from '/home/anishfathima/.pyenv/versions/3.11.9/l...pytest.setuponly' from '/home/anishfathima/.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/setuponly.py'>>]
+kwargs = {'fixturedef': <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>, 'request': <SubRequest 'logged_in_user' for <Function test_logout_from_account>>}
+firstresult = True
+
+    def _hookexec(
+        self,
+        hook_name: str,
+        methods: Sequence[HookImpl],
+        kwargs: Mapping[str, object],
+        firstresult: bool,
+    ) -> object | list[object]:
+        # called from all hookcaller instances.
+        # enable_tracing will set its own wrapping function at self._inner_hookexec
+>       return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pluggy/_manager.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturedef = <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>
+request = <SubRequest 'logged_in_user' for <Function test_logout_from_account>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef[object], request: SubRequest
+    ) -> Generator[None, object, object]:
+        try:
+>           return (yield)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/setuponly.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturedef = <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>
+request = <SubRequest 'logged_in_user' for <Function test_logout_from_account>>
+
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef[FixtureValue], request: SubRequest
+    ) -> FixtureValue:
+        """Execution of fixture setup."""
+        kwargs = {}
+        for argname in fixturedef.argnames:
+            kwargs[argname] = request.getfixturevalue(argname)
+    
+        fixturefunc = resolve_fixture_function(fixturedef, request)
+        my_cache_key = fixturedef.cache_key(request)
+        try:
+>           result = call_fixture_func(fixturefunc, request, kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:1140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturefunc = <function logged_in_user at 0x7dafbeafac00>
+request = <SubRequest 'logged_in_user' for <Function test_logout_from_account>>
+kwargs = {'page': <Page url='about:blank'>}
+
+    def call_fixture_func(
+        fixturefunc: _FixtureFunc[FixtureValue], request: FixtureRequest, kwargs
+    ) -> FixtureValue:
+        if is_generator(fixturefunc):
+            fixturefunc = cast(
+                Callable[..., Generator[FixtureValue, None, None]], fixturefunc
+            )
+            generator = fixturefunc(**kwargs)
+            try:
+                fixture_result = next(generator)
+            except StopIteration:
+                raise ValueError(f"{request.fixturename} did not yield a value") from None
+            finalizer = functools.partial(_teardown_yield_fixture, fixturefunc, generator)
+            request.addfinalizer(finalizer)
+        else:
+            fixturefunc = cast(Callable[..., FixtureValue], fixturefunc)
+>           fixture_result = fixturefunc(**kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:898: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+page = <Page url='about:blank'>
+
+    @pytest.fixture(scope="session")
+    def logged_in_user(page):
+>       page.goto("https://www.demoblaze.com")
+
+uitest/conftest.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+
+    def goto(
+        self,
+        url: str,
+        *,
+        timeout: typing.Optional[float] = None,
+        wait_until: typing.Optional[
+            Literal["commit", "domcontentloaded", "load", "networkidle"]
+        ] = None,
+        referer: typing.Optional[str] = None,
+    ) -> typing.Optional["Response"]:
+        """Page.goto
+    
+        Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first
+        non-redirect response.
+    
+        The method will throw an error if:
+        - there's an SSL error (e.g. in case of self-signed certificates).
+        - target URL is invalid.
+        - the `timeout` is exceeded during navigation.
+        - the remote server does not respond or is unreachable.
+        - the main resource failed to load.
+    
+        The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404
+        \"Not Found\" and 500 \"Internal Server Error\".  The status code for such responses can be retrieved by calling
+        `response.status()`.
+    
+        **NOTE** The method either throws an error or returns a main resource response. The only exceptions are navigation
+        to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+    
+        **NOTE** Headless mode doesn't support navigation to a PDF document. See the
+        [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+    
+        Parameters
+        ----------
+        url : str
+            URL to navigate page to. The url should include scheme, e.g. `https://`. When a `baseURL` via the context options
+            was provided and the passed URL is a path, it gets merged via the
+            [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+        timeout : Union[float, None]
+            Maximum operation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can
+            be changed by using the `browser_context.set_default_navigation_timeout()`,
+            `browser_context.set_default_timeout()`, `page.set_default_navigation_timeout()` or
+            `page.set_default_timeout()` methods.
+        wait_until : Union["commit", "domcontentloaded", "load", "networkidle", None]
+            When to consider operation succeeded, defaults to `load`. Events can be either:
+            - `'domcontentloaded'` - consider operation to be finished when the `DOMContentLoaded` event is fired.
+            - `'load'` - consider operation to be finished when the `load` event is fired.
+            - `'networkidle'` - **DISCOURAGED** consider operation to be finished when there are no network connections for
+              at least `500` ms. Don't use this method for testing, rely on web assertions to assess readiness instead.
+            - `'commit'` - consider operation to be finished when network response is received and the document started
+              loading.
+        referer : Union[str, None]
+            Referer header value. If provided it will take preference over the referer header value set by
+            `page.set_extra_http_headers()`.
+    
+        Returns
+        -------
+        Union[Response, None]
+        """
+    
+        return mapping.from_impl_nullable(
+>           self._sync(
+                self._impl_obj.goto(
+                    url=url, timeout=timeout, waitUntil=wait_until, referer=referer
+                )
+            )
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/sync_api/_generated.py:9018: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+>       return await self._main_frame.goto(**locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_page.py:551: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Frame name= url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+        return cast(
+            Optional[Response],
+            from_nullable_channel(
+>               await self._channel.send("goto", locals_to_params(locals()))
+            ),
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_frame.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Channel object at 0x7dafbdb974d0>
+method = 'goto', params = {'url': 'https://www.demoblaze.com'}
+
+    async def send(self, method: str, params: Dict = None) -> Any:
+>       return await self._connection.wrap_api_call(
+            lambda: self._inner_send(method, params, False),
+            self._is_internal_type,
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7dafbe721b90>
+cb = <function Channel.send.<locals>.<lambda> at 0x7dafbec45c60>
+is_internal = False
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        st: List[inspect.FrameInfo] = getattr(task, "__pw_stack__", inspect.stack())
+        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal)
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:528: TargetClosedError
+_____________________ test_purchase_an_item_from_the_cart ______________________
+
+.0 = <list_iterator object at 0x7dafbd71c100>
+
+    kwargs |= {
+>       arg: request.getfixturevalue(arg) for arg in get_required_args(context.step_func) if arg not in kwargs
+    }
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/pytest_bdd/scenario.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureRequest for <Function test_purchase_an_item_from_the_cart>>
+argname = 'logged_in_user'
+
+    def getfixturevalue(self, argname: str) -> Any:
+        """Dynamically run a named fixture function.
+    
+        Declaring fixtures via function argument is recommended where possible.
+        But if you can only decide whether to use another fixture at test
+        setup time, you may use this function to retrieve it inside a fixture
+        or test function body.
+    
+        This method can be used during the test setup phase or the test run
+        phase, but during the test teardown phase a fixture's value may not
+        be available.
+    
+        :param argname:
+            The fixture name.
+        :raises pytest.FixtureLookupError:
+            If the given fixture could not be found.
+        """
+        # Note that in addition to the use case described in the docstring,
+        # getfixturevalue() is also called by pytest itself during item and fixture
+        # setup to evaluate the fixtures that are requested statically
+        # (using function parameters, autouse, etc).
+    
+>       fixturedef = self._get_active_fixturedef(argname)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:532: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureRequest for <Function test_purchase_an_item_from_the_cart>>
+argname = 'logged_in_user'
+
+    def _get_active_fixturedef(
+        self, argname: str
+    ) -> FixtureDef[object] | PseudoFixtureDef[object]:
+        if argname == "request":
+            cached_result = (self, [0], None)
+            return PseudoFixtureDef(cached_result, Scope.Function)
+    
+        # If we already finished computing a fixture by this name in this item,
+        # return it.
+        fixturedef = self._fixture_defs.get(argname)
+        if fixturedef is not None:
+            self._check_scope(fixturedef, fixturedef._scope)
+            return fixturedef
+    
+        # Find the appropriate fixturedef.
+        fixturedefs = self._arg2fixturedefs.get(argname, None)
+        if fixturedefs is None:
+            # We arrive here because of a dynamic call to
+            # getfixturevalue(argname) which was naturally
+            # not known at parsing/collection time.
+            fixturedefs = self._fixturemanager.getfixturedefs(argname, self._pyfuncitem)
+            if fixturedefs is not None:
+                self._arg2fixturedefs[argname] = fixturedefs
+        # No fixtures defined with this name.
+        if fixturedefs is None:
+            raise FixtureLookupError(argname, self)
+        # The are no fixtures with this name applicable for the function.
+        if not fixturedefs:
+            raise FixtureLookupError(argname, self)
+        # A fixture may override another fixture with the same name, e.g. a
+        # fixture in a module can override a fixture in a conftest, a fixture in
+        # a class can override a fixture in the module, and so on.
+        # An overriding fixture can request its own name (possibly indirectly);
+        # in this case it gets the value of the fixture it overrides, one level
+        # up.
+        # Check how many `argname`s deep we are, and take the next one.
+        # `fixturedefs` is sorted from furthest to closest, so use negative
+        # indexing to go in reverse.
+        index = -1
+        for request in self._iter_chain():
+            if request.fixturename == argname:
+                index -= 1
+        # If already consumed all of the available levels, fail.
+        if -index > len(fixturedefs):
+            raise FixtureLookupError(argname, self)
+        fixturedef = fixturedefs[index]
+    
+        # Prepare a SubRequest object for calling the fixture.
+        try:
+            callspec = self._pyfuncitem.callspec
+        except AttributeError:
+            callspec = None
+        if callspec is not None and argname in callspec.params:
+            param = callspec.params[argname]
+            param_index = callspec.indices[argname]
+            # The parametrize invocation scope overrides the fixture's scope.
+            scope = callspec._arg2scope[argname]
+        else:
+            param = NOTSET
+            param_index = 0
+            scope = fixturedef._scope
+            self._check_fixturedef_without_param(fixturedef)
+        self._check_scope(fixturedef, scope)
+        subrequest = SubRequest(
+            self, scope, param, param_index, fixturedef, _ispytest=True
+        )
+    
+        # Make sure the fixture value is cached, running it if it isn't
+>       fixturedef.execute(request=subrequest)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:617: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>
+request = <SubRequest 'logged_in_user' for <Function test_purchase_an_item_from_the_cart>>
+
+    def execute(self, request: SubRequest) -> FixtureValue:
+        """Return the value of this fixture, executing it if not cached."""
+        # Ensure that the dependent fixtures requested by this fixture are loaded.
+        # This needs to be done before checking if we have a cached value, since
+        # if a dependent fixture has their cache invalidated, e.g. due to
+        # parametrization, they finalize themselves and fixtures depending on it
+        # (which will likely include this fixture) setting `self.cached_result = None`.
+        # See #4871
+        requested_fixtures_that_should_finalize_us = []
+        for argname in self.argnames:
+            fixturedef = request._get_active_fixturedef(argname)
+            # Saves requested fixtures in a list so we later can add our finalizer
+            # to them, ensuring that if a requested fixture gets torn down we get torn
+            # down first. This is generally handled by SetupState, but still currently
+            # needed when this fixture is not parametrized but depends on a parametrized
+            # fixture.
+            if not isinstance(fixturedef, PseudoFixtureDef):
+                requested_fixtures_that_should_finalize_us.append(fixturedef)
+    
+        # Check for (and return) cached value/exception.
+        if self.cached_result is not None:
+            request_cache_key = self.cache_key(request)
+            cache_key = self.cached_result[1]
+            try:
+                # Attempt to make a normal == check: this might fail for objects
+                # which do not implement the standard comparison (like numpy arrays -- #6497).
+                cache_hit = bool(request_cache_key == cache_key)
+            except (ValueError, RuntimeError):
+                # If the comparison raises, use 'is' as fallback.
+                cache_hit = request_cache_key is cache_key
+    
+            if cache_hit:
+                if self.cached_result[2] is not None:
+                    exc, exc_tb = self.cached_result[2]
+>                   raise exc.with_traceback(exc_tb)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:1071: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturedef = <FixtureDef argname='logged_in_user' scope='session' baseid='uitest'>
+request = <SubRequest 'logged_in_user' for <Function test_logout_from_account>>
+
+    def pytest_fixture_setup(
+        fixturedef: FixtureDef[FixtureValue], request: SubRequest
+    ) -> FixtureValue:
+        """Execution of fixture setup."""
+        kwargs = {}
+        for argname in fixturedef.argnames:
+            kwargs[argname] = request.getfixturevalue(argname)
+    
+        fixturefunc = resolve_fixture_function(fixturedef, request)
+        my_cache_key = fixturedef.cache_key(request)
+        try:
+>           result = call_fixture_func(fixturefunc, request, kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:1140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fixturefunc = <function logged_in_user at 0x7dafbeafac00>
+request = <SubRequest 'logged_in_user' for <Function test_logout_from_account>>
+kwargs = {'page': <Page url='about:blank'>}
+
+    def call_fixture_func(
+        fixturefunc: _FixtureFunc[FixtureValue], request: FixtureRequest, kwargs
+    ) -> FixtureValue:
+        if is_generator(fixturefunc):
+            fixturefunc = cast(
+                Callable[..., Generator[FixtureValue, None, None]], fixturefunc
+            )
+            generator = fixturefunc(**kwargs)
+            try:
+                fixture_result = next(generator)
+            except StopIteration:
+                raise ValueError(f"{request.fixturename} did not yield a value") from None
+            finalizer = functools.partial(_teardown_yield_fixture, fixturefunc, generator)
+            request.addfinalizer(finalizer)
+        else:
+            fixturefunc = cast(Callable[..., FixtureValue], fixturefunc)
+>           fixture_result = fixturefunc(**kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:898: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+page = <Page url='about:blank'>
+
+    @pytest.fixture(scope="session")
+    def logged_in_user(page):
+>       page.goto("https://www.demoblaze.com")
+
+uitest/conftest.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+
+    def goto(
+        self,
+        url: str,
+        *,
+        timeout: typing.Optional[float] = None,
+        wait_until: typing.Optional[
+            Literal["commit", "domcontentloaded", "load", "networkidle"]
+        ] = None,
+        referer: typing.Optional[str] = None,
+    ) -> typing.Optional["Response"]:
+        """Page.goto
+    
+        Returns the main resource response. In case of multiple redirects, the navigation will resolve with the first
+        non-redirect response.
+    
+        The method will throw an error if:
+        - there's an SSL error (e.g. in case of self-signed certificates).
+        - target URL is invalid.
+        - the `timeout` is exceeded during navigation.
+        - the remote server does not respond or is unreachable.
+        - the main resource failed to load.
+    
+        The method will not throw an error when any valid HTTP status code is returned by the remote server, including 404
+        \"Not Found\" and 500 \"Internal Server Error\".  The status code for such responses can be retrieved by calling
+        `response.status()`.
+    
+        **NOTE** The method either throws an error or returns a main resource response. The only exceptions are navigation
+        to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+    
+        **NOTE** Headless mode doesn't support navigation to a PDF document. See the
+        [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+    
+        Parameters
+        ----------
+        url : str
+            URL to navigate page to. The url should include scheme, e.g. `https://`. When a `baseURL` via the context options
+            was provided and the passed URL is a path, it gets merged via the
+            [`new URL()`](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL) constructor.
+        timeout : Union[float, None]
+            Maximum operation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can
+            be changed by using the `browser_context.set_default_navigation_timeout()`,
+            `browser_context.set_default_timeout()`, `page.set_default_navigation_timeout()` or
+            `page.set_default_timeout()` methods.
+        wait_until : Union["commit", "domcontentloaded", "load", "networkidle", None]
+            When to consider operation succeeded, defaults to `load`. Events can be either:
+            - `'domcontentloaded'` - consider operation to be finished when the `DOMContentLoaded` event is fired.
+            - `'load'` - consider operation to be finished when the `load` event is fired.
+            - `'networkidle'` - **DISCOURAGED** consider operation to be finished when there are no network connections for
+              at least `500` ms. Don't use this method for testing, rely on web assertions to assess readiness instead.
+            - `'commit'` - consider operation to be finished when network response is received and the document started
+              loading.
+        referer : Union[str, None]
+            Referer header value. If provided it will take preference over the referer header value set by
+            `page.set_extra_http_headers()`.
+    
+        Returns
+        -------
+        Union[Response, None]
+        """
+    
+        return mapping.from_impl_nullable(
+>           self._sync(
+                self._impl_obj.goto(
+                    url=url, timeout=timeout, waitUntil=wait_until, referer=referer
+                )
+            )
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/sync_api/_generated.py:9018: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+>       return await self._main_frame.goto(**locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_page.py:551: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Frame name= url='about:blank'>, url = 'https://www.demoblaze.com'
+timeout = None, waitUntil = None, referer = None
+
+    async def goto(
+        self,
+        url: str,
+        timeout: float = None,
+        waitUntil: DocumentLoadState = None,
+        referer: str = None,
+    ) -> Optional[Response]:
+        return cast(
+            Optional[Response],
+            from_nullable_channel(
+>               await self._channel.send("goto", locals_to_params(locals()))
+            ),
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_frame.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Channel object at 0x7dafbdb974d0>
+method = 'goto', params = {'url': 'https://www.demoblaze.com'}
+
+    async def send(self, method: str, params: Dict = None) -> Any:
+>       return await self._connection.wrap_api_call(
+            lambda: self._inner_send(method, params, False),
+            self._is_internal_type,
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7dafbe721b90>
+cb = <function Channel.send.<locals>.<lambda> at 0x7dafbec45c60>
+is_internal = False
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        st: List[inspect.FrameInfo] = getattr(task, "__pw_stack__", inspect.stack())
+        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal)
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:528: TargetClosedError
+________________________ test_register_with_valid_data _________________________
+
+fixturefunc = <function open_signup at 0x7dafbe74c0e0>
+request = <FixtureRequest for <Function test_register_with_valid_data>>
+kwargs = {'page': <Page url='about:blank'>}
+
+    def call_fixture_func(
+        fixturefunc: _FixtureFunc[FixtureValue], request: FixtureRequest, kwargs
+    ) -> FixtureValue:
+        if is_generator(fixturefunc):
+            fixturefunc = cast(
+                Callable[..., Generator[FixtureValue, None, None]], fixturefunc
+            )
+            generator = fixturefunc(**kwargs)
+            try:
+                fixture_result = next(generator)
+            except StopIteration:
+                raise ValueError(f"{request.fixturename} did not yield a value") from None
+            finalizer = functools.partial(_teardown_yield_fixture, fixturefunc, generator)
+            request.addfinalizer(finalizer)
+        else:
+            fixturefunc = cast(Callable[..., FixtureValue], fixturefunc)
+>           fixture_result = fixturefunc(**kwargs)
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/_pytest/fixtures.py:898: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+page = <Page url='about:blank'>
+
+    @given("the user opens the signup modal")
+    def open_signup(page: Page):
+    
+>       page.click("#signin2")
+
+uitest/test_signup.py:12: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, selector = '#signin2'
+
+    def click(
+        self,
+        selector: str,
+        *,
+        modifiers: typing.Optional[
+            typing.Sequence[Literal["Alt", "Control", "ControlOrMeta", "Meta", "Shift"]]
+        ] = None,
+        position: typing.Optional[Position] = None,
+        delay: typing.Optional[float] = None,
+        button: typing.Optional[Literal["left", "middle", "right"]] = None,
+        click_count: typing.Optional[int] = None,
+        timeout: typing.Optional[float] = None,
+        force: typing.Optional[bool] = None,
+        no_wait_after: typing.Optional[bool] = None,
+        trial: typing.Optional[bool] = None,
+        strict: typing.Optional[bool] = None,
+    ) -> None:
+        """Page.click
+    
+        This method clicks an element matching `selector` by performing the following steps:
+        1. Find an element matching `selector`. If there is none, wait until a matching element is attached to the DOM.
+        1. Wait for [actionability](https://playwright.dev/python/docs/actionability) checks on the matched element, unless `force` option is set. If
+           the element is detached during the checks, the whole action is retried.
+        1. Scroll the element into view if needed.
+        1. Use `page.mouse` to click in the center of the element, or the specified `position`.
+        1. Wait for initiated navigations to either succeed or fail, unless `noWaitAfter` option is set.
+    
+        When all steps combined have not finished during the specified `timeout`, this method throws a `TimeoutError`.
+        Passing zero timeout disables this.
+    
+        Parameters
+        ----------
+        selector : str
+            A selector to search for an element. If there are multiple elements satisfying the selector, the first will be
+            used.
+        modifiers : Union[Sequence[Union["Alt", "Control", "ControlOrMeta", "Meta", "Shift"]], None]
+            Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores
+            current modifiers back. If not specified, currently pressed modifiers are used. "ControlOrMeta" resolves to
+            "Control" on Windows and Linux and to "Meta" on macOS.
+        position : Union[{x: float, y: float}, None]
+            A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of
+            the element.
+        delay : Union[float, None]
+            Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+        button : Union["left", "middle", "right", None]
+            Defaults to `left`.
+        click_count : Union[int, None]
+            defaults to 1. See [UIEvent.detail].
+        timeout : Union[float, None]
+            Maximum time in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can
+            be changed by using the `browser_context.set_default_timeout()` or `page.set_default_timeout()` methods.
+        force : Union[bool, None]
+            Whether to bypass the [actionability](../actionability.md) checks. Defaults to `false`.
+        no_wait_after : Union[bool, None]
+            Actions that initiate navigations are waiting for these navigations to happen and for pages to start loading. You
+            can opt out of waiting via setting this flag. You would only need this option in the exceptional cases such as
+            navigating to inaccessible pages. Defaults to `false`.
+            Deprecated: This option will default to `true` in the future.
+        trial : Union[bool, None]
+            When set, this method only performs the [actionability](../actionability.md) checks and skips the action. Defaults
+            to `false`. Useful to wait until the element is ready for the action without performing it. Note that keyboard
+            `modifiers` will be pressed regardless of `trial` to allow testing elements which are only visible when those keys
+            are pressed.
+        strict : Union[bool, None]
+            When true, the call requires selector to resolve to a single element. If given selector resolves to more than one
+            element, the call throws an exception.
+        """
+    
+        return mapping.from_maybe_impl(
+>           self._sync(
+                self._impl_obj.click(
+                    selector=selector,
+                    modifiers=mapping.to_impl(modifiers),
+                    position=position,
+                    delay=delay,
+                    button=button,
+                    clickCount=click_count,
+                    timeout=timeout,
+                    force=force,
+                    noWaitAfter=no_wait_after,
+                    trial=trial,
+                    strict=strict,
+                )
+            )
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/sync_api/_generated.py:9921: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Page url='about:blank'>, selector = '#signin2', modifiers = None
+position = None, delay = None, button = None, clickCount = None, timeout = None
+force = None, noWaitAfter = None, trial = None, strict = None
+
+    async def click(
+        self,
+        selector: str,
+        modifiers: Sequence[KeyboardModifier] = None,
+        position: Position = None,
+        delay: float = None,
+        button: MouseButton = None,
+        clickCount: int = None,
+        timeout: float = None,
+        force: bool = None,
+        noWaitAfter: bool = None,
+        trial: bool = None,
+        strict: bool = None,
+    ) -> None:
+>       return await self._main_frame.click(**locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_page.py:827: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Frame name= url='about:blank'>, selector = '#signin2', modifiers = None
+position = None, delay = None, button = None, clickCount = None, timeout = None
+force = None, noWaitAfter = None, strict = None, trial = None
+
+    async def click(
+        self,
+        selector: str,
+        modifiers: Sequence[KeyboardModifier] = None,
+        position: Position = None,
+        delay: float = None,
+        button: MouseButton = None,
+        clickCount: int = None,
+        timeout: float = None,
+        force: bool = None,
+        noWaitAfter: bool = None,
+        strict: bool = None,
+        trial: bool = None,
+    ) -> None:
+>       await self._channel.send("click", locals_to_params(locals()))
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_frame.py:488: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Channel object at 0x7dafbdb974d0>
+method = 'click', params = {'selector': '#signin2'}
+
+    async def send(self, method: str, params: Dict = None) -> Any:
+>       return await self._connection.wrap_api_call(
+            lambda: self._inner_send(method, params, False),
+            self._is_internal_type,
+        )
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <playwright._impl._connection.Connection object at 0x7dafbe721b90>
+cb = <function Channel.send.<locals>.<lambda> at 0x7dafbdb7fba0>
+is_internal = False
+
+    async def wrap_api_call(
+        self, cb: Callable[[], Any], is_internal: bool = False
+    ) -> Any:
+        if self._api_zone.get():
+            return await cb()
+        task = asyncio.current_task(self._loop)
+        st: List[inspect.FrameInfo] = getattr(task, "__pw_stack__", inspect.stack())
+        parsed_st = _extract_stack_trace_information_from_stack(st, is_internal)
+        self._api_zone.set(parsed_st)
+        try:
+            return await cb()
+        except Exception as error:
+>           raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E           playwright._impl._errors.TargetClosedError: Page.click: Target page, context or browser has been closed
+
+../.pyenv/versions/3.11.9/lib/python3.11/site-packages/playwright/_impl/_connection.py:528: TargetClosedError
+=========================== short test summary info ============================
+FAILED uitest/test_cart.py::test_add_a_laptop_to_cart - playwright._impl._err...
+FAILED uitest/test_homepage.py::test_verify_homepage_loads_successfully - pla...
+FAILED uitest/test_login.py::test_login_with_valid_credentials - playwright._...
+FAILED uitest/test_logout.py::test_logout_from_account - playwright._impl._er...
+FAILED uitest/test_order.py::test_purchase_an_item_from_the_cart - playwright...
+FAILED uitest/test_signup.py::test_register_with_valid_data - playwright._imp...
+============================== 6 failed in 39.22s ==============================

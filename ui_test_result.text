@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.9, pytest-8.3.4, pluggy-1.5.0
+rootdir: /home/anishfathima/demo_automation
+plugins: anyio-4.6.0, metadata-3.1.1, html-4.1.1, bdd-8.1.0, ordering-0.6, dependency-0.6.0
+collected 6 items
+
+uitest/test_cart.py .                                                    [ 16%]
+uitest/test_homepage.py .                                                [ 33%]
+uitest/test_login.py .                                                   [ 50%]
+uitest/test_logout.py .                                                  [ 66%]
+uitest/test_order.py .                                                   [ 83%]
+uitest/test_signup.py .                                                  [100%]
+
+======================== 6 passed in 110.59s (0:01:20) =========================
